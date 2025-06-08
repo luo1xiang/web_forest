@@ -1,66 +1,78 @@
 'use client';
 
+import { useState, useEffect } from 'react';
 import MobileFrame from '@/component/layout/MobileFrame';
-import { usePsyStore } from '@/app/store/store';
+import { usePsyStore, useQuestionStore } from '@/app/store/store';
 import Image from 'next/image';
-import forestBg from '@/../public/forest.png';
-import foxImg from '@/../public/fox.png';
-import owlImg from '@/../public/owl.png';
-import squirrelImg from '@/../public/squirrel.png';
+
+// 使用原本的夕陽背景
+import endBg from '@/../public/love.png';
 
 export default function ResultPage() {
   const psyState = usePsyStore((state) => state);
+  const questionStore = useQuestionStore((state) => state);
+  
+  // 動畫狀態控制
+  const [isVisible, setIsVisible] = useState(false);
+  const [animationKey, setAnimationKey] = useState(0);
 
+  // 頁面進入動畫
+  useEffect(() => {
+    setIsVisible(false);
+    setAnimationKey(prev => prev + 1);
+    
+    const timer = setTimeout(() => {
+      setIsVisible(true);
+    }, 50);
+
+    return () => clearTimeout(timer);
+  }, []);
+
+  // 修正重新開始邏輯
   const playAgain = function() {
-    window.location.reload();
+    try {
+      // 1. 重置所有 store 狀態
+      psyState.resetScore();
+      questionStore.resetQuestions();
+      
+      // 2. 確保狀態已經重置後再跳轉
+      setTimeout(() => {
+        window.location.replace(window.location.origin + window.location.pathname.replace('/result', ''));
+      }, 100);
+      
+    } catch (error) {
+      console.error('重置失敗:', error);
+      // 備用方案：強制刷新
+      window.location.reload(true);
+    }
   }
 
-  // 根據分數選擇結果和主題配色
+  // 根據分數選擇結果數據
   const getResultData = () => {
-    if (psyState.score >= 3 && psyState.score <= 7) {
+    if (psyState.score >= 7 && psyState.score <= 14) {
       return {
-        image: foxImg,
-        title: "狐狸｜森林開心果",
-        description: "你聰明、外向又活潑，是大家心中的開心果！你喜歡和朋友一起冒險，總能帶來新點子和正能量。森林裡的夥伴們總是圍繞著你，因為你讓每一天都充滿陽光！",
-        bgGradient: "from-orange-200 via-amber-100 to-yellow-200",
-        overlay: "from-orange-300/50 via-amber-200/40 to-yellow-300/60",
-        particle: "bg-orange-400/80",
-        glow: "bg-amber-400/70",
-        ring: "border-orange-400/50",
-        buttonBg: "bg-gradient-to-r from-orange-500 to-amber-600 hover:from-orange-600 hover:to-amber-700",
-        shadow: "shadow-orange-500/70",
-        accent: "bg-yellow-500/90",
-        textColor: "text-orange-900"
+        title: "「留戀型戀人」：愛情的固執守候者",
+        description: "你傾向為感情投入並且願意努力經營，即使感受到疏離，也會試圖找回過去的甜蜜。但有時，你需要明白「留住的，不一定是愛」。"
       };
-    } else if (psyState.score >= 8 && psyState.score <= 10) {
+    } else if (psyState.score >= 15 && psyState.score <= 21) {
       return {
-        image: owlImg,
-        title: "貓頭鷹｜夜晚智者",
-        description: "你冷靜、細心、懂得傾聽，內心充滿想法與洞察力。你喜歡思考、閱讀和獨處的時光，就像一隻守護森林夜晚的貓頭鷹，帶著智慧與溫柔的力量。",
-        bgGradient: "from-orange-200 via-pink-100 to-purple-200",
-        overlay: "from-orange-300/50 via-pink-200/40 to-purple-300/60",
-        particle: "bg-orange-400/80",
-        glow: "bg-pink-400/70",
-        ring: "border-purple-400/50",
-        buttonBg: "bg-gradient-to-r from-orange-500 to-pink-600 hover:from-orange-600 hover:to-pink-700",
-        shadow: "shadow-pink-500/70",
-        accent: "bg-purple-500/90",
-        textColor: "text-purple-900"
+        title: "「放任型戀人」：靜靜等待愛自己沉沒",
+        description: "你習慣觀察與隱忍，對感情變化敏感卻常選擇不說。你不是不在意，而是不知道怎麼說出失望。偶爾，你也該允許自己主動出聲。"
+      };
+    } else if (psyState.score >= 22 && psyState.score <= 28) {
+      return {
+        title: "「對抗型戀人」：衝突中尋找答案",
+        description: "你在感情中坦率且直接，不害怕對峙，也不容許模糊地帶。你渴望確定與安全感，但有時，過於激烈反而會嚇退對方。"
+      };
+    } else if (psyState.score >= 29 && psyState.score <= 35) {
+      return {
+        title: "「抽離型戀人」：情感的預演離場者",
+        description: "當感覺不對，你往往是那個先退一步的人。你害怕失去，於是選擇提前告別。學著相信關係也需要等待，也許你會發現意外的驚喜。"
       };
     } else {
       return {
-        image: squirrelImg,
-        title: "松鼠｜細膩收藏家",
-        description: "你擁有溫暖的心和豐富的想像力，喜歡創造與蒐集生活中美好的細節。你是那種會為朋友做手工卡片、在角落種花的人，森林裡最溫柔的一道風景就是你！",
-        bgGradient: "from-orange-200 via-green-100 to-teal-200",
-        overlay: "from-orange-300/50 via-green-200/40 to-teal-300/60",
-        particle: "bg-orange-400/80",
-        glow: "bg-green-400/70",
-        ring: "border-teal-400/50",
-        buttonBg: "bg-gradient-to-r from-orange-500 to-green-600 hover:from-orange-600 hover:to-green-700",
-        shadow: "shadow-green-500/70",
-        accent: "bg-teal-500/90",
-        textColor: "text-teal-900"
+        title: "「成長型戀人」：分手也能讓人變更好",
+        description: "你擁有覺察自我與對方狀態的能力，不逃避問題，也願意承擔結果。你相信：結束不是失敗，而是一種彼此成長的機會。"
       };
     }
   };
@@ -69,177 +81,192 @@ export default function ResultPage() {
 
   return (
     <>
+      {/* 背景圖片與效果層 */}
+      <div className="fixed inset-0 z-0">
+        <Image 
+          src={endBg} 
+          alt="browser background" 
+          fill
+          className="object-cover"
+          style={{
+            objectPosition: 'center 40%',
+          }}
+          priority
+          sizes="100vw"
+        />
+        
+        {/* 夕陽氛圍強化層 */}
+        <div className="absolute inset-0 bg-gradient-to-b from-pink-500/10 via-transparent to-purple-900/20"></div>
+        
+        {/* 溫暖光暈效果 */}
+        <div className="absolute inset-0 bg-gradient-to-tr from-orange-400/15 via-transparent to-pink-400/10"></div>
+        
+        {/* 漂浮光點 */}
+        <div className="absolute inset-0 overflow-hidden pointer-events-none">
+          <div className="absolute w-2 h-2 bg-pink-300/60 rounded-full animate-pulse" style={{top: '15%', left: '10%', animationDuration: '4s', animationDelay: '0s'}}></div>
+          <div className="absolute w-1.5 h-1.5 bg-orange-300/70 rounded-full animate-pulse" style={{top: '25%', right: '15%', animationDuration: '5s', animationDelay: '1s'}}></div>
+          <div className="absolute w-3 h-3 bg-purple-300/50 rounded-full animate-pulse" style={{top: '45%', left: '8%', animationDuration: '6s', animationDelay: '2s'}}></div>
+          <div className="absolute w-2 h-2 bg-pink-400/55 rounded-full animate-pulse" style={{top: '65%', right: '12%', animationDuration: '4.5s', animationDelay: '3s'}}></div>
+        </div>
+        
+        {/* 大範圍光暈 */}
+        <div className="absolute inset-0 overflow-hidden pointer-events-none">
+          <div className="absolute w-96 h-96 bg-pink-400/20 rounded-full blur-3xl animate-pulse opacity-40" style={{top: '10%', left: '5%', animationDuration: '8s'}}></div>
+          <div className="absolute w-80 h-80 bg-orange-400/25 rounded-full blur-3xl animate-pulse opacity-35" style={{top: '20%', right: '10%', animationDuration: '10s', animationDelay: '2s'}}></div>
+          <div className="absolute w-72 h-72 bg-purple-400/20 rounded-full blur-3xl animate-pulse opacity-30" style={{bottom: '15%', left: '15%', animationDuration: '12s', animationDelay: '4s'}}></div>
+        </div>
+        
+        {/* 夢幻漸變覆蓋 */}
+        <div className="absolute inset-0 bg-gradient-to-br from-pink-500/5 via-transparent to-purple-600/8 animate-pulse opacity-60" style={{animationDuration: '15s'}}></div>
+      </div>
+      
       <MobileFrame>
-        {/* 森林背景圖片 */}
-        <div className="absolute inset-0">
-          <Image 
-            src={forestBg} 
-            alt="forest background" 
-            fill
-            className="object-cover opacity-70"
-            priority
-          />
+        {/* 夕陽暖色調覆蓋層 */}
+        <div className="absolute inset-0 bg-gradient-to-b from-pink-900/25 via-orange-900/20 to-purple-900/25"></div>
+        
+        {/* 夕陽濾鏡效果 */}
+        <div className="absolute inset-0 bg-gradient-to-br from-pink-600/10 via-orange-500/8 to-purple-600/12"></div>
+        
+        {/* 動態光影效果層 */}
+        <div className="absolute inset-0 overflow-hidden">
+          {/* 旋轉光環 */}
+          <div className="absolute top-1/2 left-1/2 w-96 h-96 -translate-x-1/2 -translate-y-1/2">
+            <div className="w-full h-full rounded-full bg-gradient-to-r from-transparent via-white/3 to-transparent 
+                            animate-spin" style={{animationDuration: '20s'}}></div>
+          </div>
+          
+          {/* 浮動光點 */}
+          <div className="absolute top-20 left-10 w-2 h-2 bg-pink-300/20 rounded-full animate-pulse"></div>
+          <div className="absolute top-40 right-16 w-3 h-3 bg-purple-300/25 rounded-full animate-bounce" style={{animationDelay: '1s'}}></div>
+          <div className="absolute bottom-32 left-20 w-1.5 h-1.5 bg-orange-300/20 rounded-full animate-pulse" style={{animationDelay: '2s'}}></div>
+          <div className="absolute bottom-48 right-8 w-2.5 h-2.5 bg-pink-300/25 rounded-full animate-bounce" style={{animationDelay: '0.5s'}}></div>
+          
+          {/* 波動效果 */}
+          <div className="absolute inset-0 bg-gradient-to-r from-transparent via-pink-200/5 to-transparent 
+                          animate-pulse" style={{animationDuration: '4s'}}></div>
         </div>
         
-        {/* 主題色彩覆蓋層 */}
-        <div className={`absolute inset-0 bg-gradient-to-br ${resultData.bgGradient} opacity-75`}></div>
+        {/* 溫暖的燈光效果 */}
+        <div className="absolute inset-0 bg-gradient-to-tl from-pink-200/30 via-orange-100/25 to-purple-200/35 animate-pulse" style={{animationDuration: '6s'}}></div>
         
-        {/* 動態覆蓋層 */}
-        <div className={`absolute inset-0 bg-gradient-to-tl ${resultData.overlay} animate-pulse`} style={{animationDuration: '4s'}}></div>
-        
-        {/* 森林光芒掃過效果 */}
-        <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/20 to-transparent animate-pulse" style={{animationDuration: '6s', animationDelay: '2s'}}></div>
-        
-        {/* 增強版森林精靈光點效果 */}
-        <div className="absolute inset-0 overflow-hidden pointer-events-none">
-          <div className={`absolute w-3 h-3 ${resultData.particle} rounded-full animate-bounce top-1/5 left-1/6 shadow-xl`} style={{animationDelay: '0s', animationDuration: '2.5s'}}></div>
-          <div className={`absolute w-4 h-4 ${resultData.particle} rounded-full animate-bounce top-1/4 right-1/5 shadow-2xl`} style={{animationDelay: '0.8s', animationDuration: '2.8s'}}></div>
-          <div className={`absolute w-2 h-2 ${resultData.particle} rounded-full animate-bounce top-3/5 left-1/8 shadow-lg`} style={{animationDelay: '1.2s', animationDuration: '3.2s'}}></div>
-          <div className={`absolute w-3 h-3 ${resultData.particle} rounded-full animate-bounce top-2/3 right-1/6 shadow-xl`} style={{animationDelay: '2s', animationDuration: '2.4s'}}></div>
-          <div className={`absolute w-4 h-4 ${resultData.particle} rounded-full animate-bounce top-4/5 left-2/3 shadow-2xl`} style={{animationDelay: '2.8s', animationDuration: '2s'}}></div>
-          <div className={`absolute w-2 h-2 ${resultData.particle} rounded-full animate-bounce top-1/12 right-2/5 shadow-lg`} style={{animationDelay: '3.5s', animationDuration: '3.8s'}}></div>
-          
-          {/* 新增更多光點 */}
-          <div className={`absolute w-1 h-1 ${resultData.glow} rounded-full animate-bounce top-1/8 left-1/3 shadow-md`} style={{animationDelay: '0.3s', animationDuration: '2.2s'}}></div>
-          <div className={`absolute w-2 h-2 ${resultData.accent} rounded-full animate-bounce top-7/8 right-1/8 shadow-lg`} style={{animationDelay: '1.7s', animationDuration: '3.5s'}}></div>
-          <div className={`absolute w-3 h-3 ${resultData.shadow} rounded-full animate-bounce top-1/2 left-1/12 shadow-xl`} style={{animationDelay: '2.5s', animationDuration: '2.7s'}}></div>
-          <div className={`absolute w-1 h-1 ${resultData.particle} rounded-full animate-bounce top-3/8 right-1/12 shadow-sm`} style={{animationDelay: '3.2s', animationDuration: '4s'}}></div>
-        </div>
-
-        {/* 簡化版森林背景效果 */}
-        <div className="absolute inset-0 overflow-hidden pointer-events-none">
-          {/* 森林光點效果 */}
-          <div className={`absolute w-3 h-3 ${resultData.particle} rounded-full animate-bounce top-1/5 left-1/6 shadow-lg opacity-60`} style={{animationDelay: '0s', animationDuration: '2.5s'}}></div>
-          <div className={`absolute w-4 h-4 ${resultData.particle} rounded-full animate-bounce top-1/4 right-1/5 shadow-xl opacity-70`} style={{animationDelay: '0.8s', animationDuration: '2.8s'}}></div>
-          <div className={`absolute w-2 h-2 ${resultData.particle} rounded-full animate-bounce top-3/5 left-1/8 shadow-md opacity-50`} style={{animationDelay: '1.2s', animationDuration: '3.2s'}}></div>
-          <div className={`absolute w-3 h-3 ${resultData.particle} rounded-full animate-bounce top-2/3 right-1/6 shadow-lg opacity-60`} style={{animationDelay: '2s', animationDuration: '2.4s'}}></div>
-          <div className={`absolute w-4 h-4 ${resultData.particle} rounded-full animate-bounce top-4/5 left-2/3 shadow-xl opacity-80`} style={{animationDelay: '2.8s', animationDuration: '2s'}}></div>
-          <div className={`absolute w-2 h-2 ${resultData.particle} rounded-full animate-bounce top-1/12 right-2/5 shadow-md opacity-40`} style={{animationDelay: '3.5s', animationDuration: '3.8s'}}></div>
-          
-          {/* 更多森林光點 */}
-          <div className={`absolute w-1 h-1 ${resultData.glow} rounded-full animate-bounce top-1/8 left-1/3 shadow-md opacity-50`} style={{animationDelay: '0.3s', animationDuration: '2.2s'}}></div>
-          <div className={`absolute w-2 h-2 ${resultData.accent} rounded-full animate-bounce top-7/8 right-1/8 shadow-lg opacity-60`} style={{animationDelay: '1.7s', animationDuration: '3.5s'}}></div>
-          <div className={`absolute w-3 h-3 ${resultData.shadow} rounded-full animate-bounce top-1/2 left-1/12 shadow-xl opacity-40`} style={{animationDelay: '2.5s', animationDuration: '2.7s'}}></div>
-          <div className={`absolute w-1 h-1 ${resultData.particle} rounded-full animate-bounce top-3/8 right-1/12 shadow-sm opacity-30`} style={{animationDelay: '3.2s', animationDuration: '4s'}}></div>
-          
-          {/* 森林陽光效果 */}
-          <div className={`absolute w-8 h-8 ${resultData.glow} rounded-full opacity-15 blur-sm animate-pulse top-1/8 left-1/3`} style={{animationDuration: '6s'}}></div>
-          <div className={`absolute w-6 h-6 ${resultData.accent} rounded-full opacity-12 blur-md animate-pulse top-2/3 right-1/5`} style={{animationDelay: '2s', animationDuration: '8s'}}></div>
-          <div className={`absolute w-10 h-10 ${resultData.shadow} rounded-full opacity-10 blur-lg animate-pulse top-1/2 left-1/6`} style={{animationDelay: '4s', animationDuration: '10s'}}></div>
-        </div>
-
-        {/* 簡化版森林光環 */}
-        <div className="absolute inset-0 flex justify-center items-center pointer-events-none">
-          <div className={`w-96 h-96 border ${resultData.ring} rounded-full animate-spin opacity-15 shadow-lg`} style={{animationDuration: '30s'}}></div>
-          <div className={`absolute w-80 h-80 border ${resultData.ring} rounded-full animate-spin opacity-12 shadow-md`} style={{animationDuration: '25s', animationDirection: 'reverse'}}></div>
-          <div className={`absolute w-64 h-64 border ${resultData.ring} rounded-full animate-spin opacity-10 shadow-sm`} style={{animationDuration: '20s'}}></div>
-        </div>
-
-        {/* 主要內容 */}
-        <div className="relative z-20 flex flex-col h-full py-4">
-          
-          {/* 結果展示區域 */}
-          <div className="flex-1 flex flex-col items-center justify-center px-4 gap-4">
+        {/* 可滾動的主要內容容器 */}
+        <div className={`relative z-20 h-full overflow-y-auto transition-all duration-500 ease-out ${isVisible ? 'opacity-100 transform translate-y-0 scale-100' : 'opacity-0 transform translate-y-8 scale-95'}`}
+             key={animationKey}>
+          <div className='flex flex-col items-center justify-center py-2 px-4 h-full'>
             
-            {/* 動物圖片 - 森林風格特效 */}
-            <div className="relative group">
-              {/* 森林樹葉環繞效果 */}
-              <div className={`absolute -top-8 -left-8 w-4 h-2 ${resultData.glow} opacity-60 animate-bounce`} style={{animationDelay: '0s', animationDuration: '3s', borderRadius: '50% 10% 50% 10%'}}></div>
-              <div className={`absolute -top-6 -right-10 w-3 h-2 ${resultData.accent} opacity-50 animate-bounce`} style={{animationDelay: '1s', animationDuration: '2.5s', borderRadius: '50% 10% 50% 10%'}}></div>
-              <div className={`absolute -bottom-8 -left-6 w-5 h-3 ${resultData.particle} opacity-70 animate-bounce`} style={{animationDelay: '2s', animationDuration: '3.5s', borderRadius: '50% 10% 50% 10%'}}></div>
-              <div className={`absolute -bottom-6 -right-8 w-3 h-2 ${resultData.shadow} opacity-40 animate-bounce`} style={{animationDelay: '0.5s', animationDuration: '2.8s', borderRadius: '50% 10% 50% 10%'}}></div>
-              <div className={`absolute top-1/4 -left-12 w-2 h-1 ${resultData.glow} opacity-80 animate-bounce`} style={{animationDelay: '1.5s', animationDuration: '3.2s', borderRadius: '50% 10% 50% 10%'}}></div>
-              <div className={`absolute top-3/4 -right-12 w-4 h-2 ${resultData.accent} opacity-60 animate-bounce`} style={{animationDelay: '2.5s', animationDuration: '2.2s', borderRadius: '50% 10% 50% 10%'}}></div>
+            {/* 主要內容容器 */}
+            <div className={`w-full max-w-sm mx-auto relative transition-all duration-700 ease-out delay-100 ${isVisible ? 'opacity-100 transform translate-y-0 rotate-0' : 'opacity-0 transform translate-y-12 rotate-2'}`}>
               
-              {/* 森林小花朵效果 */}
-              <div className={`absolute top-1/6 right-1/6 w-2 h-2 ${resultData.particle} opacity-70 animate-pulse`} style={{animationDelay: '0s', animationDuration: '4s', borderRadius: '50% 0 50% 0'}}></div>
-              <div className={`absolute bottom-1/4 left-1/8 w-3 h-3 ${resultData.glow} opacity-60 animate-pulse`} style={{animationDelay: '2s', animationDuration: '3s', borderRadius: '50% 0 50% 0'}}></div>
-              <div className={`absolute top-2/3 right-1/4 w-2 h-2 ${resultData.accent} opacity-50 animate-pulse`} style={{animationDelay: '1s', animationDuration: '5s', borderRadius: '50% 0 50% 0'}}></div>
+              {/* 主要面板背景 - 柔和白色 */}
+              <div className="absolute inset-0 bg-white/60 backdrop-blur-md 
+                              rounded-3xl shadow-2xl border-2 border-white/40
+                              before:absolute before:inset-2 before:border before:border-white/30 before:rounded-2xl
+                              after:absolute after:inset-4 after:border after:border-white/20 after:rounded-xl
+                              transition-all duration-1000 ease-in-out"></div>
               
-              {/* 森林螢火蟲效果 */}
-              <div className={`absolute top-1/3 left-1/5 w-1 h-1 ${resultData.shadow} opacity-90 animate-ping`} style={{animationDelay: '0s', animationDuration: '2s'}}></div>
-              <div className={`absolute bottom-1/3 right-1/5 w-1 h-1 ${resultData.glow} opacity-80 animate-ping`} style={{animationDelay: '1s', animationDuration: '2.5s'}}></div>
-              <div className={`absolute top-1/2 right-1/8 w-1 h-1 ${resultData.particle} opacity-70 animate-ping`} style={{animationDelay: '0.5s', animationDuration: '3s'}}></div>
-              <div className={`absolute bottom-1/6 left-1/3 w-1 h-1 ${resultData.accent} opacity-85 animate-ping`} style={{animationDelay: '1.8s', animationDuration: '2.2s'}}></div>
+              {/* 光暈效果 */}
+              <div className="absolute -inset-4 bg-gradient-to-r from-pink-300/10 via-orange-200/15 to-purple-300/10 
+                              rounded-full blur-xl animate-pulse opacity-50"></div>
               
-              {/* 森林樹枝效果 */}
-              <div className={`absolute -top-16 left-1/4 w-12 h-1 ${resultData.shadow} opacity-30 animate-pulse rotate-12`} style={{animationDuration: '6s', borderRadius: '50px'}}></div>
-              <div className={`absolute -bottom-16 right-1/4 w-16 h-1 ${resultData.glow} opacity-25 animate-pulse -rotate-6`} style={{animationDelay: '2s', animationDuration: '8s', borderRadius: '50px'}}></div>
-              <div className={`absolute top-1/2 -right-20 w-10 h-1 ${resultData.accent} opacity-20 animate-pulse rotate-45`} style={{animationDelay: '4s', animationDuration: '10s', borderRadius: '50px'}}></div>
-              
-              {/* 森林陽光條紋 */}
-              <div className={`absolute -inset-24 opacity-10 animate-pulse`} style={{animationDuration: '8s', background: `linear-gradient(45deg, transparent 40%, ${resultData.glow.replace('bg-', '').replace('/80', '')} 42%, ${resultData.glow.replace('bg-', '').replace('/80', '')} 43%, transparent 45%)`}}></div>
-              <div className={`absolute -inset-28 opacity-8 animate-pulse`} style={{animationDelay: '2s', animationDuration: '12s', background: `linear-gradient(-45deg, transparent 40%, ${resultData.accent.replace('bg-', '').replace('/90', '')} 42%, ${resultData.accent.replace('bg-', '').replace('/90', '')} 43%, transparent 45%)`}}></div>
-              
-              {/* 主圖片 */}
-              <Image 
-                src={resultData.image} 
-                alt={resultData.title}
-                className="relative z-10 w-72 h-72 object-contain drop-shadow-2xl 
-                         group-hover:scale-105 transition-all duration-700 
-                         animate-pulse group-hover:animate-none group-hover:drop-shadow-[0_35px_60px_rgba(0,0,0,0.4)]"
-                width={288}
-                height={288}
-                priority
-                style={{animationDuration: '4s'}}
-              />
-              
-              {/* 森林地面效果 */}
-              <div className={`absolute -bottom-12 left-1/2 w-32 h-4 ${resultData.shadow} opacity-20 blur-md transform -translate-x-1/2`} style={{borderRadius: '50%'}}></div>
-              <div className={`absolute -bottom-8 left-1/2 w-24 h-2 ${resultData.glow} opacity-30 blur-sm transform -translate-x-1/2 animate-pulse`} style={{animationDuration: '3s', borderRadius: '50%'}}></div>
-            </div>
+              {/* 內容區域 */}
+              <div className="relative z-10 p-4 pt-3">
+                
+                {/* 結局標籤 - 柔和顏色 */}
+                <div className={`flex justify-center mb-3 transition-all duration-500 ease-out delay-200 ${isVisible ? 'opacity-100 transform translate-y-0 scale-100' : 'opacity-0 transform -translate-y-4 scale-75'}`}>
+                  <div className="relative group">
+                    <div className="w-12 h-12 bg-white/70 backdrop-blur-sm rounded-full 
+                                  flex items-center justify-center shadow-lg border-2 border-white/50
+                                  before:absolute before:inset-1 before:rounded-full before:border before:border-white/30
+                                  transition-all duration-500 group-hover:scale-110 group-hover:rotate-12">
+                      <span className="text-pink-600 font-bold text-sm drop-shadow-md">💕</span>
+                    </div>
+                    {/* 裝飾點 */}
+                    <div className="absolute -top-1 -right-1 w-2.5 h-2.5 bg-pink-300/80 rounded-full border border-white/70 shadow-sm
+                                  animate-ping"></div>
+                    <div className="absolute -bottom-1 -left-1 w-2 h-2 bg-purple-300/80 rounded-full border border-white/70 shadow-sm
+                                  animate-bounce" style={{animationDelay: '0.5s'}}></div>
+                  </div>
+                </div>
+                
+                {/* 結局標題 - 柔和顏色 */}
+                <div className={`text-center mb-4 transition-all duration-600 ease-out delay-300 ${isVisible ? 'opacity-100 transform translate-x-0' : 'opacity-0 transform -translate-x-8'}`}>
+                  <div className="inline-block px-4 py-2 bg-white/60 backdrop-blur-sm
+                                rounded-full shadow-lg border border-white/50
+                                hover:scale-105 transition-all duration-300">
+                    <h2 className="text-pink-700 font-bold text-xs drop-shadow-md leading-tight">
+                      結局分析｜你的愛情類型
+                    </h2>
+                  </div>
+                </div>
 
-            {/* 結果標題 - 縮小字體 */}
-            <div className="text-center">
-              <h1 className={`text-lg font-bold ${resultData.textColor} drop-shadow-lg backdrop-blur-sm 
-                           bg-white/25 rounded-2xl py-2 px-4 border border-white/40 animate-pulse max-w-sm`}
-                  style={{animationDuration: '3s'}}>
-                你是：{resultData.title}
-              </h1>
-            </div>
+                {/* 結果類型 - 柔和顏色 */}
+                <div className={`mb-4 relative group transition-all duration-700 ease-out delay-500 ${isVisible ? 'opacity-100 transform translate-y-0 scale-100' : 'opacity-0 transform translate-y-6 scale-95'}`}>
+                  <div className="bg-white/50 backdrop-blur-sm p-3 rounded-xl 
+                                shadow-md border border-white/40 relative overflow-hidden text-center
+                                group-hover:shadow-lg transition-all duration-300">
+                    {/* 光效 */}
+                    <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/30 to-transparent 
+                                  opacity-0 group-hover:opacity-100 transition-opacity duration-500 
+                                  translate-x-[-100%] group-hover:translate-x-[100%] transition-transform duration-1000"></div>
+                    <h3 className="text-pink-800 text-sm font-bold relative z-10">{resultData.title}</h3>
+                  </div>
+                </div>
 
-            {/* 結果描述 - 縮小字體 */}
-            <div className={`text-center text-xs ${resultData.textColor} leading-relaxed px-4 
-                          backdrop-blur-sm bg-white/20 rounded-2xl py-3 border border-white/30 
-                          max-w-sm mx-auto shadow-lg`}>
-              {resultData.description}
-            </div>
-          </div>
+                {/* 結果描述 - 柔和顏色 */}
+                <div className={`mb-5 relative group transition-all duration-700 ease-out delay-600 ${isVisible ? 'opacity-100 transform translate-y-0 scale-100' : 'opacity-0 transform translate-y-6 scale-95'}`}>
+                  <div className="bg-white/50 backdrop-blur-sm p-4 rounded-xl 
+                                shadow-md border border-white/40 relative overflow-hidden
+                                group-hover:shadow-lg transition-all duration-300">
+                    {/* 光效 */}
+                    <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/30 to-transparent 
+                                  opacity-0 group-hover:opacity-100 transition-opacity duration-500 
+                                  translate-x-[-100%] group-hover:translate-x-[100%] transition-transform duration-1000"></div>
+                    <p className="text-pink-800 text-xs leading-relaxed text-center relative z-10 font-medium">
+                      {resultData.description}
+                    </p>
+                  </div>
+                </div>
 
-          {/* 底部按鈕區域 */}
-          <div className="px-4 pb-4 flex items-center justify-center">
-            {/* 再玩一次按鈕 */}
-            <button 
-              className={`relative z-50 w-full max-w-xs rounded-2xl text-white font-bold text-sm py-3 px-6
-                         ${resultData.buttonBg} transition-all duration-500 transform 
-                         hover:scale-105 hover:-translate-y-1 active:scale-95 active:translate-y-0
-                         shadow-xl hover:shadow-2xl border-2 border-white/40 overflow-hidden group
-                         backdrop-blur-md flex items-center justify-center
-                         hover:border-white/60 animate-pulse hover:animate-none`}
-              onClick={playAgain}
-              style={{animationDuration: '3s'}}
-            >
-              {/* 按鈕內部光效 */}
-              <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/30 to-transparent 
-                            transform -skew-x-12 -translate-x-full group-hover:translate-x-full 
-                            transition-transform duration-800 ease-out"></div>
-              
-              {/* 按鈕文字 */}
-              <div className="relative z-10 flex items-center justify-center gap-2">
-                <span className="drop-shadow-lg">再玩一次</span>
+                {/* 再次測驗按鈕 - 柔和顏色 */}
+                <div className={`text-center transition-all duration-800 ease-out delay-700 ${isVisible ? 'opacity-100 transform translate-y-0 scale-100' : 'opacity-0 transform translate-y-4 scale-90'}`}>
+                  <button 
+                    className="group w-full relative overflow-hidden rounded-xl shadow-md 
+                             hover:shadow-lg transition-all duration-300 hover:-translate-y-0.5
+                             active:translate-y-0 active:shadow-sm hover:scale-[1.02]"
+                    onClick={playAgain}
+                    type="button"
+                  >
+                    {/* 按鈕背景 - 柔和顏色 */}
+                    <div className="absolute inset-0 bg-white/40 backdrop-blur-sm
+                                  group-hover:bg-white/50 transition-all duration-300"></div>
+                    
+                    {/* 光澤效果 */}
+                    <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/20 to-transparent 
+                                  group-hover:via-white/30 transition-all duration-300
+                                  translate-x-[-100%] group-hover:translate-x-[100%] transition-transform duration-700"></div>
+                    
+                    {/* 按鈕邊框 */}
+                    <div className="absolute inset-0 border border-white/40 rounded-xl 
+                                  group-hover:border-white/60 transition-all duration-300"></div>
+                    
+                    {/* 按鈕內容 */}
+                    <div className="relative z-10 px-4 py-2.5 min-h-[44px] flex items-center justify-center">
+                      <span className="text-pink-700 text-sm font-medium text-center leading-tight 
+                                     drop-shadow-sm group-hover:text-pink-800 transition-colors duration-300">
+                        重新測驗
+                      </span>
+                    </div>
+                    
+                    {/* 裝飾效果 */}
+                    <div className="absolute top-2 left-3 w-1.5 h-1.5 rounded-full bg-pink-300/40 animate-pulse"></div>
+                    <div className="absolute bottom-2 right-3 w-1 h-1 rounded-full bg-purple-300/40 animate-ping"></div>
+                  </button>
+                </div>
               </div>
-              
-              {/* 按鈕邊緣效果 */}
-              <div className="absolute inset-0 rounded-2xl border-2 border-white/20 opacity-0 group-hover:opacity-100 transition-all duration-500 animate-pulse"></div>
-            </button>
+            </div>
+
           </div>
         </div>
-
-        {/* 四角森林裝飾 */}
-        <div className="absolute top-6 left-6 w-6 h-6 border-t-2 border-l-2 border-white/40 animate-pulse" style={{animationDuration: '4s'}}></div>
-        <div className="absolute top-6 right-6 w-6 h-6 border-t-2 border-r-2 border-white/40 animate-pulse" style={{animationDelay: '1s', animationDuration: '4s'}}></div>
-        <div className="absolute bottom-6 left-6 w-6 h-6 border-b-2 border-l-2 border-white/40 animate-pulse" style={{animationDelay: '2s', animationDuration: '4s'}}></div>
-        <div className="absolute bottom-6 right-6 w-6 h-6 border-b-2 border-r-2 border-white/40 animate-pulse" style={{animationDelay: '3s', animationDuration: '4s'}}></div>
       </MobileFrame>
     </>
   );
