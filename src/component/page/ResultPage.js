@@ -5,8 +5,13 @@ import MobileFrame from '@/component/layout/MobileFrame';
 import { usePsyStore, useQuestionStore } from '@/app/store/store';
 import Image from 'next/image';
 
-// 使用原本的夕陽背景
-import endBg from '@/../public/love.png';
+// 修正圖片路徑 - 使用字符串路徑形式
+const bgImg = '/end.png';
+const result1Img = '/end1.png';
+const result2Img = '/end2.png';
+const result3Img = '/end3.png';
+const result4Img = '/end4.png';
+const result5Img = '/end5.png';
 
 export default function ResultPage() {
   const psyState = usePsyStore((state) => state);
@@ -51,26 +56,31 @@ export default function ResultPage() {
   const getResultData = () => {
     if (psyState.score >= 7 && psyState.score <= 14) {
       return {
+        image: result1Img,
         title: "「留戀型戀人」：愛情的固執守候者",
         description: "你傾向為感情投入並且願意努力經營，即使感受到疏離，也會試圖找回過去的甜蜜。但有時，你需要明白「留住的，不一定是愛」。"
       };
     } else if (psyState.score >= 15 && psyState.score <= 21) {
       return {
+        image: result2Img,
         title: "「放任型戀人」：靜靜等待愛自己沉沒",
         description: "你習慣觀察與隱忍，對感情變化敏感卻常選擇不說。你不是不在意，而是不知道怎麼說出失望。偶爾，你也該允許自己主動出聲。"
       };
     } else if (psyState.score >= 22 && psyState.score <= 28) {
       return {
+        image: result3Img,
         title: "「對抗型戀人」：衝突中尋找答案",
         description: "你在感情中坦率且直接，不害怕對峙，也不容許模糊地帶。你渴望確定與安全感，但有時，過於激烈反而會嚇退對方。"
       };
     } else if (psyState.score >= 29 && psyState.score <= 35) {
       return {
+        image: result4Img,
         title: "「抽離型戀人」：情感的預演離場者",
         description: "當感覺不對，你往往是那個先退一步的人。你害怕失去，於是選擇提前告別。學著相信關係也需要等待，也許你會發現意外的驚喜。"
       };
     } else {
       return {
+        image: result5Img,
         title: "「成長型戀人」：分手也能讓人變更好",
         description: "你擁有覺察自我與對方狀態的能力，不逃避問題，也願意承擔結果。你相信：結束不是失敗，而是一種彼此成長的機會。"
       };
@@ -84,7 +94,7 @@ export default function ResultPage() {
       {/* 背景圖片與效果層 */}
       <div className="fixed inset-0 z-0">
         <Image 
-          src={endBg} 
+          src={bgImg} 
           alt="browser background" 
           fill
           className="object-cover"
@@ -152,7 +162,7 @@ export default function ResultPage() {
         {/* 可滾動的主要內容容器 */}
         <div className={`relative z-20 h-full overflow-y-auto transition-all duration-500 ease-out ${isVisible ? 'opacity-100 transform translate-y-0 scale-100' : 'opacity-0 transform translate-y-8 scale-95'}`}
              key={animationKey}>
-          <div className='flex flex-col items-center justify-center py-2 px-4 h-full'>
+          <div className='flex flex-col items-center justify-start py-4 px-4 min-h-full'>
             
             {/* 主要內容容器 */}
             <div className={`w-full max-w-sm mx-auto relative transition-all duration-700 ease-out delay-100 ${isVisible ? 'opacity-100 transform translate-y-0 rotate-0' : 'opacity-0 transform translate-y-12 rotate-2'}`}>
@@ -169,26 +179,9 @@ export default function ResultPage() {
                               rounded-full blur-xl animate-pulse opacity-50"></div>
               
               {/* 內容區域 */}
-              <div className="relative z-10 p-4 pt-3">
+              <div className="relative z-10 p-4">
                 
-                {/* 結局標籤 - 柔和顏色 */}
-                <div className={`flex justify-center mb-3 transition-all duration-500 ease-out delay-200 ${isVisible ? 'opacity-100 transform translate-y-0 scale-100' : 'opacity-0 transform -translate-y-4 scale-75'}`}>
-                  <div className="relative group">
-                    <div className="w-12 h-12 bg-white/70 backdrop-blur-sm rounded-full 
-                                  flex items-center justify-center shadow-lg border-2 border-white/50
-                                  before:absolute before:inset-1 before:rounded-full before:border before:border-white/30
-                                  transition-all duration-500 group-hover:scale-110 group-hover:rotate-12">
-                      <span className="text-pink-600 font-bold text-sm drop-shadow-md">💕</span>
-                    </div>
-                    {/* 裝飾點 */}
-                    <div className="absolute -top-1 -right-1 w-2.5 h-2.5 bg-pink-300/80 rounded-full border border-white/70 shadow-sm
-                                  animate-ping"></div>
-                    <div className="absolute -bottom-1 -left-1 w-2 h-2 bg-purple-300/80 rounded-full border border-white/70 shadow-sm
-                                  animate-bounce" style={{animationDelay: '0.5s'}}></div>
-                  </div>
-                </div>
-                
-                {/* 結局標題 - 柔和顏色 */}
+                {/* 結局標題 - 移除emoji，直接顯示標題 */}
                 <div className={`text-center mb-4 transition-all duration-600 ease-out delay-300 ${isVisible ? 'opacity-100 transform translate-x-0' : 'opacity-0 transform -translate-x-8'}`}>
                   <div className="inline-block px-4 py-2 bg-white/60 backdrop-blur-sm
                                 rounded-full shadow-lg border border-white/50
@@ -196,6 +189,35 @@ export default function ResultPage() {
                     <h2 className="text-pink-700 font-bold text-xs drop-shadow-md leading-tight">
                       結局分析｜你的愛情類型
                     </h2>
+                  </div>
+                </div>
+
+                {/* 結果圖片 */}
+                <div className={`flex justify-center mb-4 transition-all duration-700 ease-out delay-400 ${isVisible ? 'opacity-100 transform translate-y-0 scale-100' : 'opacity-0 transform translate-y-6 scale-90'}`}>
+                  <div className="relative group">
+                    <div className="relative bg-white/50 backdrop-blur-sm rounded-2xl shadow-lg border-2 border-white/40 overflow-hidden
+                                  group-hover:shadow-xl transition-all duration-300
+                                  group-hover:scale-105 group-hover:border-pink-300/60
+                                  max-w-xs w-full">
+                      {/* 光效 */}
+                      <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/20 to-transparent 
+                                    opacity-0 group-hover:opacity-100 transition-opacity duration-500 
+                                    translate-x-[-100%] group-hover:translate-x-[100%] transition-transform duration-1000 z-10"></div>
+                      
+                      <Image 
+                        src={resultData.image} 
+                        alt={resultData.title}
+                        className="w-full h-auto object-contain group-hover:scale-105 transition-all duration-500"
+                        width={300}
+                        height={200}
+                        priority
+                        style={{ maxHeight: '200px' }}
+                      />
+                    </div>
+                    
+                    {/* 裝飾點 */}
+                    <div className="absolute -top-2 -right-2 text-pink-500/60 text-base animate-bounce pointer-events-none">💖</div>
+                    <div className="absolute -bottom-2 -left-2 text-purple-500/60 text-xs animate-pulse delay-300 pointer-events-none">✨</div>
                   </div>
                 </div>
 
