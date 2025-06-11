@@ -19,7 +19,7 @@ export default function QuestionPage({questionIndex, nextStep}) {
   // 愛情測驗問題數據
   const loveQuestions = [
     {
-      title: "第1題｜週五晚上，你們各自加班沒聯絡",
+      title: "倒數七天｜週五晚上，你們各自加班沒聯絡",
       description: "「他沒傳晚安。你等到凌晨也沒有任何訊息。」你會怎麼做？",
       backgroundImage: "/1.png",
       options: [
@@ -29,7 +29,7 @@ export default function QuestionPage({questionIndex, nextStep}) {
       ]
     },
     {
-      title: "第2題｜朋友聚會時有人問起你們",
+      title: "倒數六天｜朋友聚會時有人問起你們",
       description: "「你突然說不出最近你們做過什麼浪漫的事。」你怎麼回應？",
       backgroundImage: "/2.png",
       options: [
@@ -39,7 +39,7 @@ export default function QuestionPage({questionIndex, nextStep}) {
       ]
     },
     {
-      title: "第3題｜你滑到他對前女友點讚的照片",
+      title: "倒數五天｜你滑到他對前女友點讚的照片",
       description: "「一種熟悉又陌生的不安感湧上心頭。」你會？",
       backgroundImage: "/3.png",
       options: [
@@ -49,7 +49,7 @@ export default function QuestionPage({questionIndex, nextStep}) {
       ]
     },
     {
-      title: "第4題｜你主動提議週末一起出去，他說太累",
+      title: "倒數四天｜你主動提議週末一起出去，他說太累",
       description: "「這已經是他第三次拒絕你了。」你會？",
       backgroundImage: "/4.png",
       options: [
@@ -59,7 +59,7 @@ export default function QuestionPage({questionIndex, nextStep}) {
       ]
     },
     {
-      title: "第5題｜你們聊天越來越像例行公事",
+      title: "倒數三天｜你們聊天越來越像例行公事",
       description: "「你傳了限時動態，他也不再回應。」你怎麼面對？",
       backgroundImage: "/5.png",
       options: [
@@ -69,7 +69,7 @@ export default function QuestionPage({questionIndex, nextStep}) {
       ]
     },
     {
-      title: "第6題｜某天你在路上看到他一個人走著",
+      title: "倒數兩天｜某天你在路上看到他一個人走著",
       description: "「他沒看到你，神情淡然。」你會？",
       backgroundImage: "/6.png",
       options: [
@@ -79,7 +79,7 @@ export default function QuestionPage({questionIndex, nextStep}) {
       ]
     },
     {
-      title: "第7題｜你終於鼓起勇氣問：「我們是不是變了？」",
+      title: "最後一天｜你終於鼓起勇氣問：「我們是不是變了？」",
       description: "「他沉默了一會，只說：我也不知道。」你怎麼回應？",
       backgroundImage: "/7.png",
       options: [
